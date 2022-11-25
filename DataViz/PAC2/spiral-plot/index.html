@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+    <title>Spiral Plot</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    text {
+      font: 10px sans-serif;
+      color: MediumSeaGreen;
+        text-shadow: 2px 2px 4px grey;
+    }
+    /* h1 {
+      margin:-15.5em 0em;
+    } */
+    #explanation-container {
+      float:left;
+      width:30%;
+    }
+    #graph-container {
+      float:left;
+      width:auto;
+
+      border-right: 5px dotted silver;
+      padding-right: 10px;
+      margin-right:10px;
+    }
+  </style>
+  <script data-require="d3@4.0.0" data-semver="4.0.0" src="https://d3js.org/d3.v4.js"></script>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Increments en emissions de gasos amb efecte d'hivernacle des de 1978</h1>
+  </div>
+  <div id="graph-container"><div id="chart"></div></div>
+  <div id="explanation-container">
+    <div class="explanation">
+      <h2>Observacions</h2>
+      <p>
+        En aquest gràfic mostrem l'increment en emissions d'efecte hivernacle entre cada any i l'any anterior. És a dir, si l'any 1 vam emetre 100 i l'any 2 105, el valor que mostrem serà 5.
+        Amb això volem veure com evolucionen les emissions, si continuen creixent o decreixent.
+        Aquest tipus de gràfic ens ajuda a veure molt fàcilment si hi ha una certa tendència en una sèrie temporal.
+      </p>
+      <ul>
+        <li>Amb aquest tipus de gràfic podem veure fàcilment si una sèrie temporal presenta una tendència a l'alça / baixa</li>
+        <li>Els anys on l'increment en emissions ha estat superior al promig els hem indicat en vermell, la resta en blau</li>
+      </ul>
+      <p><strong>Amb el gràfic queda molt clar que a partir de l'any 2010 l'increment en les emissions ha pujat clarament, i es manté consistentment per sobre del promig!</strong></p>
+    </div>
+    <div class="links">
+      <h2>Fonts</h2>
+      <p>
+        Per al codi, hi han hagut diverses fonts útils per a certs punts:
+      </p>
+      <ul>
+        <li><a href="https://gist.github.com/karthiir/fe68d82609ba6c40da3e8b5b1f030c02">Exemple de spiral plot amb D3</a></li>
+        <li><a href="https://d3-graph-gallery.com/graph/custom_legend.html">Llegenda</a></li>
+        <li><a href="https://www.eea.europa.eu/ims/atmospheric-greenhouse-gas-concentrations">Dades emissions</a></li>
+      </ul>
+    </div>
+  </div>
+  <script src="spiralPlot.js"></script>
+</body>
+
+</html>

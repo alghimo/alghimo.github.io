@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+    <title>Force-Directed Graph</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: sans-serif;
+      }
+      text {
+        font: 10px sans-serif;
+        color: MediumSeaGreen;
+  				text-shadow: 2px 2px 4px grey;
+      }
+      /* h1 {
+        margin:-15.5em 0em;
+      } */
+      #explanation-container {
+        float:left;
+        width:30%;
+      }
+      #graph-container {
+        float:left;
+        width:600px;
+
+        border-right: 5px dotted silver;
+        padding-right: 10px;
+        margin-right:10px;
+      }
+    </style>
+    <script src="https://unpkg.com/d3@7.6.1/dist/d3.min.js"></script>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Visualitzar transaccions entre clients</h1>
+    </div>
+    <div id="graph-container"><div id="canvas"></div></div>
+    <div id="explanation-container">
+      <div class="explanation">
+        <h2>Observacions</h2>
+        <p>
+          Aqui hem fet servir el force-directed graph proporcionat per D3, en aquest exemple per visualitzar transaccions entre clients,
+          amb algunes particularitats que ens ajudan a interpretar millor la xarxa resultant, per exemple:
+        </p>
+        <ul>
+          <li>El color de cada node (cercle) representa el segment al que pertany el client</li>
+          <li>El radi de cada node és proporcional al nombre de transaccions on el client hi apareix com a origen o destí</li>
+        </ul>
+        <p>
+          Amb això ens resulta molt fàcil veure, per exemple, la importància o centralitat d'un node a la xarxa (com ara Telefonica),
+          o si tenims certs nodes que són la única connexió entre subgrafs (com ara Bob).
+        </p>
+      </div>
+      <div class="links">
+        <h2>Fonts</h2>
+        <p>
+          Per al codi, hi han hagut diverses fonts útils per a certs punts:
+        </p>
+        <ul>
+          <li><a href="https://www.reddit.com/r/learnjavascript/comments/ahz0ee/conditional_node_color_in_d3_or_calling_a/">Color dels nodes</a></li>
+          <li><a href="https://d3-graph-gallery.com/graph/custom_legend.html">Llegenda</a></li>
+          <li><a href="https://stackoverflow.com/questions/43906686/d3-node-radius-depends-on-number-of-links-weight-property">Radi dels nodes</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <script src="forceGraph.js"></script>
+</body></html>
