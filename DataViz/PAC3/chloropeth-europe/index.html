@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <!-- Leaflet stylesheet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+  integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+  crossorigin=""/>
+  <!-- Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+  integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+  crossorigin=""></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
+    <!-- <script src="europe.js"></script> -->
+
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display+SC|Roboto" rel="stylesheet">
+
+  </head>
+
+  <style>
+
+  #mapid {
+    height: 800px;
+    width: 1200px;
+    float: left;
+  }
+
+  #control {
+    float: left;
+    margin-left:20px;
+  }
+
+  #top {
+    display: inline-block;
+  }
+
+  #play-from-date,
+  #play-full-dates {
+    font-size: 24px;
+  }
+
+  .info {
+    background-color: #545454;
+    width: auto;
+    color: white;
+    padding: 1em;
+    font-family: 'Roboto', sans-serif;
+
+  }
+
+  .info h2 {
+    padding: 0;
+    margin-top: 0;
+    font-family: 'Playfair Display SC', serif;
+  }
+
+  .info h3 {
+    padding: none;
+    font-weight: bold;
+    font-style: italic;
+    color: #ffd32a;
+  }
+
+
+  .legend {
+    line-height: 18px;
+    /*color: #555;*/
+    color: white;
+    width: auto;
+  }
+
+  .legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+  }
+
+
+  </style>
+
+  <body>
+    <div id="top">
+      <h1 id="main-message">2020-04-01</h1>
+      <button id="play-full-dates">Play Animation</button>
+      <br/>
+      <!-- <button id="play-from-date">Play From Date</button>
+      <br/> -->
+      <br/>
+    </div>
+    <br/>
+    <div id="mapid"></div>
+    <div id="control">
+      <h3>Select Date</h3>
+      <input type="date" id="active-date" value="2020-04-01" min="2020-04-01" max="2022-12-23" />
+      <h3>Metric to use</h3>
+      <input type="radio" name="metric" value="Cumulative_deaths" id="cumulative-deaths" />
+      <label for="cumulative-deaths">Cumulative Deaths</label>
+      <br/>
+      <input type="radio" name="metric" value="pct_deaths" id="pct-deaths" checked />
+      <label for="pct-deaths">Percentage Deaths VS Total population</label>
+      <br/>
+      <input type="radio" name="metric" value="Cumulative_cases" id="cumulative-cases" />
+      <label for="cumulative-cases">Cumulative Cases</label>
+      <br/>
+      <input type="radio" name="metric" value="pct_cases" id="pct-cases" />
+      <label for="pct-cases">Percentage Cases VS Total population</label>
+    </div>
+
+  <script defer src="scriptChloropeth.js"></script>
+  </body>
+</html>
