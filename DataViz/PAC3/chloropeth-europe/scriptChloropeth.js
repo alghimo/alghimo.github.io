@@ -67,17 +67,6 @@
             colorCodes[0]
     }
 
-    /*function getColor(d) {
-        return d > 1000000 ? '#005824' :
-            d > 500000  ? '#238b45' :
-            d > 200000  ? '#41ae76' :
-            d > 100000  ? '#66c2a4' :
-            d > 50000   ? '#99d8c9' :
-            d > 20000   ? '#ccece6' :
-            d > 15000   ? '#edf8fb':
-                        'snow'
-    }*/
-
     // Custom control
     function style(feature) {
         var metricValue = 0
@@ -248,10 +237,10 @@
                 currentGrade = grades[i]
                 div.innerHTML +=
                     '<i style="background:' + getColor(prevGrade) + '"></i> ' +
-                    prevGrade + '&ndash;' + currentGrade + '<br>';
+                    (prevGrade * 100).toFixed(2) + ' &ndash; ' + (currentGrade * 100).toFixed(2) + '%<br>';
             }
             currentGrade = grades[grades.length - 1]
-            div.innerHTML += '<i style="background:' + getColor(currentGrade) + '"></i> ' + currentGrade + '+';
+            div.innerHTML += '<i style="background:' + getColor(currentGrade) + '"></i> &GreaterEqual;' + (currentGrade * 100).toFixed(2) + '%';
 
             return div;
         };

@@ -87,30 +87,32 @@
 
   <body>
     <div id="top">
+      <h1>Percentage of COVID infections and deceases in Europe</h1>
+    </div>
+    <br/>
+    <div id="mapid"></div>
+    <div id="control">
       <h1 id="main-message">2020-04-01</h1>
       <button id="play-full-dates">Play Animation</button>
       <br/>
       <!-- <button id="play-from-date">Play From Date</button>
       <br/> -->
       <br/>
-    </div>
-    <br/>
-    <div id="mapid"></div>
-    <div id="control">
+      <br/>
       <h3>Select Date</h3>
       <input type="date" id="active-date" value="2020-04-01" min="2020-04-01" max="2022-12-23" />
       <h3>Metric to use</h3>
-      <input type="radio" name="metric" value="Cumulative_deaths" id="cumulative-deaths" />
+      <!-- <input type="radio" name="metric" value="Cumulative_deaths" id="cumulative-deaths" />
       <label for="cumulative-deaths">Cumulative Deaths</label>
-      <br/>
+      <br/> -->
       <input type="radio" name="metric" value="pct_deaths" id="pct-deaths" checked />
-      <label for="pct-deaths">Percentage Deaths VS Total population</label>
+      <label for="pct-deaths">% of population deceased</label>
       <br/>
-      <input type="radio" name="metric" value="Cumulative_cases" id="cumulative-cases" />
+      <!-- <input type="radio" name="metric" value="Cumulative_cases" id="cumulative-cases" />
       <label for="cumulative-cases">Cumulative Cases</label>
-      <br/>
+      <br/> -->
       <input type="radio" name="metric" value="pct_cases" id="pct-cases" />
-      <label for="pct-cases">Percentage Cases VS Total population</label>
+      <label for="pct-cases">% of population infected at some point</label>
     </div>
 
   <script defer src="scriptChloropeth.js"></script>
