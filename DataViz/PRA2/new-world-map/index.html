@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <!-- Leaflet stylesheet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+      crossorigin=""/>
+  <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+      crossorigin=""></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display+SC|Roboto" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <div id="top">
+      <h1>Temperature anomalies from 1900 based on baseline 1750 - 1899</h1>
+    </div>
+    <br/>
+    <div id="world-map"></div>
+    <div id="legend">
+      <svg width="320" height="50" viewBox="0,0,356,50" style="overflow: visible; display: block;">
+        <g>
+          <rect x="0" y="18" width="36" height="10" fill="#2166AC"></rect>
+          <rect x="36" y="18" width="35" height="10" fill="#4393C3"></rect>
+          <rect x="71" y="18" width="36" height="10" fill="#92C5De"></rect>
+          <rect x="107" y="18" width="35" height="10" fill="#D1E5F0"></rect>
+          <rect x="142" y="18" width="36" height="10" fill="#F7F7F7"></rect>
+          <rect x="178" y="18" width="35" height="10" fill="#FDDBC7"></rect>
+          <rect x="213" y="18" width="36" height="10" fill="#F4A582"></rect>
+          <rect x="249" y="18" width="35" height="10" fill="#D6604D"></rect>
+          <rect x="284" y="18" width="36" height="10" fill="#B2182B"></rect>
+        </g>
+        <g transform="translate(0,28)" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
+          <g class="tick" opacity="1" transform="translate(36.5,0)">
+            <line stroke="currentColor" y2="6" y1="-10"></line>
+            <text fill="currentColor" y="9" dy="0.71em">-2</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(71.5,0)">
+            <line stroke="currentColor" y2="6" y1="-10"></line>
+            <text fill="currentColor" y="9" dy="0.71em">-1.5</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(107.5,0)">
+            <line stroke="currentColor" y2="6" y1="-10"></line>
+            <text fill="currentColor" y="9" dy="0.71em">-1</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(142.5,0)">
+            <line stroke="currentColor" y2="6" y1="-10"></line>
+            <text fill="currentColor" y="9" dy="0.71em">-0.5</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(178.5,0)">
+            <line stroke="currentColor" y2="6" y1="-10"></line>
+            <text fill="currentColor" y="9" dy="0.71em">0</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(213.5,0)">
+            <line stroke="currentColor" y2="6" y1="-10"></line>
+            <text fill="currentColor" y="9" dy="0.71em">0.5</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(249.5,0)">
+            <line stroke="currentColor" y2="6" y1="-10"></line>
+            <text fill="currentColor" y="9" dy="0.71em">1</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(284.5,0)">
+            <line stroke="currentColor" y2="6" y1="-10"></line>
+            <text fill="currentColor" y="9" dy="0.71em">1.5</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(319.5,0)">
+            <line stroke="currentColor" y2="6" y1="-10"></line>
+            <text fill="currentColor" y="9" dy="0.71em">2</text>
+          </g>
+          <text x="0" y="-16" fill="currentColor" text-anchor="start" font-weight="bold" class="title">Temperature anomaly (Celsius)</text>
+        </g>
+      </svg>
+    </div>
+
+  <script defer src="viz.js"></script>
+  </body>
+</html>
