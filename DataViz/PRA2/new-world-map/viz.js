@@ -41,8 +41,10 @@
     const circleOpacity = 0.5
     // let mapURL = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoibmlja255ciIsImEiOiJjajduNGptZWQxZml2MndvNjk4eGtwbDRkIn0.L0aWwfHlFJVGa-WOj7EHaA'
     let mapURL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-    let citiesURL = "./data/cities.csv"
-    let cityTempURL = "./data/cityTemps.csv"
+    // let citiesURL = "./data/cities.csv"
+    // let cityTempURL = "./data/cityTemps.csv"
+    let citiesURL = "./data/cities.json"
+    let cityTempURL = "./data/cityTemps.json"
     let currentDateText = d3.select("#current-date")
     let yearMonthSlider = d3.select("#year-month-slider")
     let playButton = d3.select("#play")
@@ -324,14 +326,14 @@
     stopButton.on("click", stopAnimation);
     yearMonthSlider.on("input", function() {drawTimePoint(this.value)})
 
-    d3.csv(citiesURL).then(
+    d3.json(citiesURL).then(
         (citiesData, error) => {
             if (error) {
                 console.log("Error loading cities!")
                 console.log(error)
             } else {
                 console.log("Loaded cities")
-                d3.csv(cityTempURL).then(
+                d3.json(cityTempURL).then(
                     (cityTempData, error) => {
                         if (error) {
                             console.log("Error loading city temps!")
