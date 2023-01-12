@@ -8,8 +8,11 @@
     var cities = {};
     var cityTemps = {};
     var timePoints = [];
+    var currentIndex;
     var currentYear;
     var currentMonth;
+    var minYear;
+    var animationInterval;
 
     // Functions
     var drawCircle;
@@ -17,27 +20,49 @@
     var setup;
     var drawTimePoint;
     var createPopupContent;
+    var playNextYear;
+    var playPrevYear;
+    var playFirstYear;
+    var playLastYear;
+    var playAnimation;
+    var stopAnimation;
+    var increaseAnimationSpeed;
+    var decreaseAnimationSpeed;
+    var changeAnimationSpeed;
 
     // End prototypes
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     const radiusScale = 100000
+    // Time to animate a year in ms
+    let animateYearDuration = 1000
     // Time to animate a circle in ms
-    const animateCircleDuration = 1000
+    const animateCircleDuration = 500
     const circleOpacity = 0.5
     // let mapURL = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoibmlja255ciIsImEiOiJjajduNGptZWQxZml2MndvNjk4eGtwbDRkIn0.L0aWwfHlFJVGa-WOj7EHaA'
     let mapURL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
     let citiesURL = "./data/cities.csv"
     let cityTempURL = "./data/cityTemps.csv"
+    let currentDateText = d3.select("#current-date")
+    let yearMonthSlider = d3.select("#year-month-slider")
+    let playButton = d3.select("#play")
+    let stopButton = d3.select("#stop")
+
+    let timePointToIndex = (year, month) => {
+        return timePoints.findIndex(t => (t.year == year) & (t.month == month))
+    }
+
+    let indexToTimePoint = (index) => {
+        return timePoints[index]
+    }
 
     var getAnomalyColor = d3.scaleLinear()
-        .domain(d3.ticks(-2, 2, 9))
+        .domain(d3.ticks(-5, 5, 9))
         .range([
             "#2166AC", "#4393C3", "#92C5De", "#D1E5F0",
             "#F7F7F7",
             "#FDDBC7", "#F4A582", "#D6604D", "#B2182B"
         ]);
-
 
     var lat = 50.0755381;
     var lon = 14.43780049999998;
@@ -62,53 +87,37 @@
         <strong>Anomaly:</strong>${cityTemp.anomaly.toFixed(2)}`
     }
 
-    // color: 'red', fillColor: '#f03', opacity: 0.5, radius: 500
     drawCircle = (cityTemp) => {
         city = cities[cityTemp.id]
 
         if (cityTemp.id in circles) {
             circle = circles[cityTemp.id]
-            let newRadius = Math.abs(cityTemp.anomaly) * radiusScale;
-            let startRadius = circle.getRadius()
+            // let newRadius = Math.abs(cityTemp.anomaly);
+            let newColor = getAnomalyColor(cityTemp.anomaly)
+            circle.setStyle({color: newColor, fillColor: newColor})
 
-            let targetReached = (currentRadius) => {
-                if (newRadius > startRadius) {
-                    return currentRadius >= newRadius
-                } else {
-                    return currentRadius <= newRadius
-                }
-            }
-
-            let delta = newRadius - startRadius;
-            let step = delta / animateCircleDuration;
-
-            let interval = setInterval(function() {
-                let currentRadius = circle.getRadius();
-                let newColor = getAnomalyColor(currentRadius / radiusScale)
-                if (!targetReached(currentRadius)) {
-                    currentRadius = currentRadius + step;
-                    circle.setRadius(currentRadius);
-                    circle.setStyle({color: newColor, fillColor: newColor})
-                } else {
-                    clearInterval(interval);
-                }
-            }, 1);
 
             circle.setPopupContent(createPopupContent(city, cityTemp))
         } else {
             let color = getAnomalyColor(cityTemp.anomaly)
+            // let radius = Math.abs(cityTemp.anomaly)
+            let radius = 2
             let circle = L
                 .circle([city.lat, city.lon], {
                     color: color,
                     fillColor: color,
                     fillOpacity: circleOpacity,
-                    radius: Math.abs(cityTemp.anomaly) * radiusScale
+                    radius: radius * radiusScale
                 })
                 .bindPopup(createPopupContent(city, cityTemp))
                 .addTo(map);
 
             circle.on("mouseover", function(ev) {
                 ev.target.openPopup()
+            });
+
+            circle.on("mouseout", function(ev) {
+                ev.target.closePopup()
             });
 
             circles[city.id] = circle;
@@ -133,6 +142,8 @@
         timePoints = []
         cities = {}
         cityTemps = {}
+        currentIndex = 0;
+        animateYearDuration = 1000;
 
         citiesData.forEach(city => {
             city["lat"] = parseFloat(city["lat"])
@@ -148,11 +159,11 @@
             cityTemp["temp"] = parseFloat(cityTemp["temp"])
             cityTemp["standardized_temp"] = parseFloat(cityTemp["standardized_temp"])
             cityTemp["anomaly"] = parseFloat(cityTemp["anomaly"])
-            year = cityTemp.year
+            year = parseInt(cityTemp.year)
             if (year < minYear) {
                 minYear = year;
             }
-            month = cityTemp.month
+            month = parseInt(cityTemp.month)
             if (!(year in cityTemps)) {
                 cityTemps[year] = {}
             }
@@ -164,34 +175,154 @@
 
             cityTemps[year][month][cityTemp.id] = cityTemp
         })
+        yearMonthSlider.attr("min", "0")
+        yearMonthSlider.attr("max", timePoints.length - 1)
+
+        let compareTimePoints = (t1, t2) => {
+            if ((t1.year == t2.year) && (t1.month == t2.month)) {
+                return 0
+            }
+            if ((t1.year < t2.year) || ((t1.year == t2.year) && t1.month < t2.month)) {
+                return -1
+            }
+            return 1
+        }
+        timePoints.sort(compareTimePoints);
 
         if (minYear in cityTemps) {
-            currentMonth = 1
-            currentYear = minYear
-            console.log("Drawing year: " + minYear);
-            drawTimePoint(currentYear, currentMonth);
+            // currentMonth = 1
+            // currentYear = minYear
+            drawTimePoint(currentIndex);
         } else {
             console.log("ERROR: minYear " + minYear + " is not loaded in the yearly temps!")
         }
+        playButton.node().disabled = false;
+        stopButton.node().disabled = true;
+        yearMonthSlider.node().disabled = false;
+
+
+        function checkKey(e) {
+            // If the animation is playing, do not capture keys
+            let animationPlaying = playButton.node().disabled
+
+            e = e || window.event;
+            if (!animationPlaying) {
+                switch (e.key) {
+                    case "ArrowLeft":
+                        playPrevYear()
+                        break;
+                    case "ArrowRight":
+                        playNextYear()
+                        break;
+                    case "ArrowUp":
+                        playLastYear()
+                        break;
+                    case "ArrowDown":
+                        playFirstYear()
+                        break;
+                }
+            } else {
+                switch (e.key) {
+                    case "ArrowLeft":
+                        decreaseAnimationSpeed()
+                        break;
+                    case "ArrowRight":
+                        increaseAnimationSpeed()
+                        break;
+                }
+            }
+        }
+
+        document.onkeydown = checkKey;
     }
 
-    drawTimePoint = (year, month) => {
+    drawTimePoint = (index) => {
+        year = timePoints[index].year
+        month = timePoints[index].month
         if (!(year in cityTemps && month in cityTemps[year])) {
             console.log("ERROR drawing year: " + year + " is not loaded in the city yearly temps!")
             return
         }
 
+        currentDateText.text(`${year}/${month.toString().padStart(2, '0')}`)
         let timePointTemps = cityTemps[year][month]
-        let first = true
+
         for (const [cityId, cityTemp] of Object.entries(timePointTemps)) {
-            if (first) {
-                console.log("Drawing circle for city temp at " + year + "-" + month)
-                console.log(cityTemp)
-                first = false
-            }
             drawCircle(cityTemp)
         }
+
+        yearMonthSlider.attr("value", index);
     }
+
+    playPrevYear = () => {
+        currentIndex -= 1
+
+        if (currentIndex < 0) {
+            console.log("No prev year to play")
+            currentIndex = 0
+            return
+        }
+
+        drawTimePoint(currentIndex)
+    }
+
+    playNextYear = () => {
+        currentIndex += 1
+
+        if (currentIndex >= timePoints.length) {
+            console.log("No next year to play")
+            return
+        }
+
+        drawTimePoint(currentIndex)
+    }
+
+    playFirstYear = () => {
+        currentIndex = 0
+
+        drawTimePoint(currentIndex)
+    }
+
+    playLastYear = () => {
+        currentIndex = timePoints.length - 1
+
+        drawTimePoint(currentIndex)
+    }
+
+    playAnimation = () => {
+        playButton.node().disabled = true;
+        stopButton.node().disabled = false;
+        animationInterval = setInterval(function() {
+            playNextYear()
+        }, animateYearDuration);
+    }
+
+    stopAnimation = () => {
+        clearInterval(animationInterval);
+        playButton.node().disabled = false;
+        stopButton.node().disabled = true;
+    }
+
+    increaseAnimationSpeed = () => {
+        changeAnimationSpeed(0.5)
+    }
+
+    decreaseAnimationSpeed = () => {
+        changeAnimationSpeed(2)
+    }
+
+    changeAnimationSpeed = (scaleFactor) => {
+        animateYearDuration = animateYearDuration * scaleFactor;
+        clearInterval(animationInterval);
+        animationInterval = setInterval(function() {
+            playNextYear()
+        }, animateYearDuration);
+
+    }
+
+    playButton.on("click", playAnimation);
+    stopButton.on("click", stopAnimation);
+    yearMonthSlider.on("input", function() {drawTimePoint(this.value)})
 
     d3.csv(citiesURL).then(
         (citiesData, error) => {
@@ -214,25 +345,5 @@
             }
         }
     )
-
-
-
-
-    // let drawCountries = () => {
-    //     for (const [cityId, city] of Object.entries(cities)) {
-    //         console.log(key, value);
-    //     }
-    // }
-    // drawCircle(lat, lon * 2, 2, "red", "#f03", 0.5)
-
-    // addMarker(
-    //     {
-    //         "lat": lat,
-    //         "lon": lon,
-    //         "city": "Prague",
-    //         "country": "Czech Republic"
-    //     },
-    //     false
-    // )
 
 }(d3, L));

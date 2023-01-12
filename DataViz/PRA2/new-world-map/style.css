@@ -14,3 +14,11 @@ body{
     width: 1200px;
     float: left;
 }
+
+#world-map .leaflet-map-pane {
+    transform: translate3d(0px, -52px, 0px) !important;
+}
+
+#year-month-slider {
+    width: 100%;
+}
