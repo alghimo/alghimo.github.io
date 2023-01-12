@@ -492,7 +492,7 @@
                             anomaly: +d.anomaly
                         }
                     }, data)
-                    console.log(data)
+
                     mainLoop(data)
                 }
             }
