@@ -476,13 +476,22 @@
                 anomaly: +d.anomaly
             }
         }
-        d3.json(tempDataURL, parseRow).then(
+        d3.json(tempDataURL).then(
             (data, error) => {
                 if (error) {
                     console.log("Error loading temperature data from " + tempDataURL)
                     console.log(error)
                 } else {
                     console.log("Data loaded")
+                    data.forEach(function(d, index) {
+                        let parsedDate = parseYearMonthToDate(d.year_month)
+
+                        data[index] = {
+                            date: parsedDate,
+                            month: parsedDate.getMonth(),
+                            anomaly: +d.anomaly
+                        }
+                    }, data)
                     console.log(data)
                     mainLoop(data)
                 }
