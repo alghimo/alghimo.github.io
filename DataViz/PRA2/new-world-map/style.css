@@ -10,8 +10,8 @@ body{
 }
 
 #world-map {
-    height: 800px;
-    width: 1200px;
+    height: 640px;
+    width: 960px;
     float: left;
 }
 
@@ -20,5 +20,47 @@ body{
 }
 
 #year-month-slider {
-    width: 100%;
+    width: 85%;
+    float:left;
+}
+
+#left {
+    position:absolute;
+    width:960px;
+    left:10px;
+    top:100px;
+}
+#controls {
+    float:left;
+    width:100%;
+    /* height: 640px;
+    margin-right: 20px; */
+}
+
+#right {
+    position: absolute;
+    width: 640px;
+    left: 1210px;
+    top: 100px;
+}
+
+#spiral-1, #spiral-2 {
+    position: relative;
+}
+
+#spiral-1 > figure, #spiral-2 > figure {
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+}
+
+#current-date {
+    font-size:22px;
+    float:left;
+    width:10%;
+}
+
+#play {
+    margin-left: 250px;
 }

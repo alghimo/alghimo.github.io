@@ -29,6 +29,8 @@
     var increaseAnimationSpeed;
     var decreaseAnimationSpeed;
     var changeAnimationSpeed;
+    var updateSpiral1;
+    var updateSpiral2;
 
     // End prototypes
 
@@ -254,6 +256,8 @@
         }
 
         yearMonthSlider.attr("value", index);
+        updateSpiral1(index);
+        updateSpiral2(index);
     }
 
     playPrevYear = () => {
@@ -326,6 +330,30 @@
     stopButton.on("click", stopAnimation);
     yearMonthSlider.on("input", function() {drawTimePoint(this.value)})
 
+    var extractCityTemps = (cityId, allCityTemps) => {
+        var parseYearMonthToDate = d3.utcParse("%Y/%m");
+        var parseTimestepDate = ts => parseYearMonthToDate(`${ts.year}/${ts.month}`)
+
+        let compareTimePoints = (t1, t2) => {
+            if ((t1.year == t2.year) && (t1.month == t2.month)) {
+                return 0
+            }
+            if ((t1.year < t2.year) || ((t1.year == t2.year) && t1.month < t2.month)) {
+                return -1
+            }
+            return 1
+        }
+
+        var cityTemps = allCityTemps.filter(cityTemp => cityTemp.id == cityId).sort(compareTimePoints)
+
+        for (let i=0; i < cityTemps.length; ++i) {
+            cityTemps[i].i = i - 1
+            cityTemps[i].date = parseTimestepDate(cityTemps[i])
+        }
+
+        return cityTemps.sort(compareTimePoints)
+    }
+
     d3.json(citiesURL).then(
         (citiesData, error) => {
             if (error) {
@@ -339,8 +367,38 @@
                             console.log("Error loading city temps!")
                             console.log(error)
                         } else {
-                            console.log("Loaded city temps")
-                            setup(citiesData, cityTempData)
+                            getBarlowFontface.then(function(barlow_fontface) {
+                                console.log("Generating climate spiral wrapper")
+
+                                var selectCity1 = () => {
+                                    d3.select("#spiral-1").html("");
+                                    cityId1 = parseInt(d3.select("#city1").node().value)
+                                    monthlyTemps1 = extractCityTemps(cityId1, cityTempData)
+                                    city1 = citiesData.filter(c => c.id == cityId1)[0]
+                                    city1Name = city1.city + " (" + city1.country + ")"
+                                    drawSpiral1Seg = ClimateSpiral (d3, "spiral-1", 320, 320, city1Name, monthlyTemps1, barlow_fontface)
+                                    updateSpiral1 = drawSpiral1Seg.update
+                                }
+
+                                selectCity1()
+                                d3.select("#city1").on("change", selectCity1)
+
+                                var selectCity2 = () => {
+                                    d3.select("#spiral-2").html("");
+                                    cityId2 = parseInt(d3.select("#city2").node().value)
+                                    monthlyTemps2 = extractCityTemps(cityId2, cityTempData)
+                                    city2 = citiesData.filter(c => c.id == cityId2)[0]
+                                    city2Name = city2.city + " (" + city2.country + ")"
+                                    drawSpiral2Seg = ClimateSpiral (d3, "spiral-2", 320, 320, city2Name, monthlyTemps2, barlow_fontface)
+                                    updateSpiral2 = drawSpiral2Seg.update
+                                }
+                                selectCity2()
+                                d3.select("#city2").on("change", selectCity2)
+
+                                console.log("Loaded city temps")
+                                // console.log(cityTempData)
+                                setup(citiesData, cityTempData)
+                            })
                         }
                     }
                 )
