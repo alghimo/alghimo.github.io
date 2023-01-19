@@ -37,7 +37,8 @@
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     const radiusScale = 100000
     // Time to animate a year in ms
-    let animateYearDuration = 1000
+    const initialAnimateTimePointDuration = 250
+    let animateTimePointDuration = 250
     // Time to animate a circle in ms
     const animateCircleDuration = 500
     const circleOpacity = 0.5
@@ -147,7 +148,7 @@
         cities = {}
         cityTemps = {}
         currentIndex = 0;
-        animateYearDuration = 1000;
+        animateTimePointDuration = initialAnimateTimePointDuration;
 
         citiesData.forEach(city => {
             city["lat"] = parseFloat(city["lat"])
@@ -300,7 +301,7 @@
         stopButton.node().disabled = false;
         animationInterval = setInterval(function() {
             playNextYear()
-        }, animateYearDuration);
+        }, animateTimePointDuration);
     }
 
     stopAnimation = () => {
@@ -318,11 +319,11 @@
     }
 
     changeAnimationSpeed = (scaleFactor) => {
-        animateYearDuration = animateYearDuration * scaleFactor;
+        animateTimePointDuration = animateTimePointDuration * scaleFactor;
         clearInterval(animationInterval);
         animationInterval = setInterval(function() {
             playNextYear()
-        }, animateYearDuration);
+        }, animateTimePointDuration);
 
     }
 
