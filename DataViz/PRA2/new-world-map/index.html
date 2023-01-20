@@ -13,113 +13,187 @@
       crossorigin=""></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="moment.min.js"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display+SC|Roboto" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
   </head>
   <body>
-    <div id="title">
-      <h1>Temperature anomalies from 1900 based on baseline 1750 - 1899</h1>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1>Temperature anomalies from 1900 based on baseline 1750 - 1899</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="row">
+            <div class="col-lg-3">
+          <!-- <div class="row">
+            <div class="col-lg-12"> -->
+              <button id="play" type="button" class="btn btn-primary form-control" disabled>Play</button>
+            </div>
+            <!-- </div>
+          </div>
+          <div class="row top-buffer">
+            <div class="col-lg-12"> -->
+            <div class="col-lg-3">
+              <button id="stop" type="button" class="btn btn-danger form-control" disabled>Stop</button>
+            </div>
+            <div class="col-lg-6 top-buffer-10">
+              <span>Use left and right arrows to speed up/slow down the animation while it plays</span>
+            </div>
+          </div>
+            <!-- </div>
+          </div>
+          <div class="row top-buffer">
+            <div class="col-lg-12"> -->
+          <!-- <label for="city1" class="top-buffer">First City</label>
+          <select id="city1" name="city1" class="form-control">
+            <option value="272" selected>Barcelona</option>
+            <option value="2124">New York</option>
+            <option value="2575">Reikjavik</option>
+            <option value="2963">Sydney</option>
+            <option value="2590">Rio de Janeiro</option>
+            <option value="751">Dakar</option>
+          </select>
+          <label for="city2" class="top-buffer">Second City</label>
+          <select id="city2" name="city2" class="form-control">
+            <option value="272">Barcelona</option>
+            <option value="2124" selected>New York</option>
+            <option value="2575">Reikjavik</option>
+            <option value="2963">Sydney</option>
+            <option value="2590">Rio de Janeiro</option>
+            <option value="751">Dakar</option>
+          </select> -->
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="row">
+                <div class="col-lg-2">
+                  <strong id="current-date" class="text-center"></strong>
+                </div>
+                <div class="col-lg-10">
+                  <input type="range" name="year-month-slider" id=year-month-slider class="top-buffer-10" min="0" max="100" value="0" disabled>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div id="world-map"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-8">
+              <div id="legend">
+                <svg width="320" height="50" viewBox="0,0,356,50" style="overflow: visible; display: block;">
+                  <g>
+                    <rect x="0" y="18" width="36" height="10" fill="#2166AC"></rect>
+                    <rect x="36" y="18" width="35" height="10" fill="#4393C3"></rect>
+                    <rect x="71" y="18" width="36" height="10" fill="#92C5De"></rect>
+                    <rect x="107" y="18" width="35" height="10" fill="#D1E5F0"></rect>
+                    <rect x="142" y="18" width="36" height="10" fill="#F7F7F7"></rect>
+                    <rect x="178" y="18" width="35" height="10" fill="#FDDBC7"></rect>
+                    <rect x="213" y="18" width="36" height="10" fill="#F4A582"></rect>
+                    <rect x="249" y="18" width="35" height="10" fill="#D6604D"></rect>
+                    <rect x="284" y="18" width="36" height="10" fill="#B2182B"></rect>
+                  </g>
+                  <g transform="translate(0,28)" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
+                    <g class="tick" opacity="1" transform="translate(36.5,0)">
+                      <line stroke="currentColor" y2="6" y1="-10"></line>
+                      <text fill="currentColor" y="9" dy="0.71em">-5</text>
+                    </g>
+                    <g class="tick" opacity="1" transform="translate(71.5,0)">
+                      <line stroke="currentColor" y2="6" y1="-10"></line>
+                      <text fill="currentColor" y="9" dy="0.71em">-3.75</text>
+                    </g>
+                    <g class="tick" opacity="1" transform="translate(107.5,0)">
+                      <line stroke="currentColor" y2="6" y1="-10"></line>
+                      <text fill="currentColor" y="9" dy="0.71em">-2.5</text>
+                    </g>
+                    <g class="tick" opacity="1" transform="translate(142.5,0)">
+                      <line stroke="currentColor" y2="6" y1="-10"></line>
+                      <text fill="currentColor" y="9" dy="0.71em">-1.25</text>
+                    </g>
+                    <g class="tick" opacity="1" transform="translate(178.5,0)">
+                      <line stroke="currentColor" y2="6" y1="-10"></line>
+                      <text fill="currentColor" y="9" dy="0.71em">0</text>
+                    </g>
+                    <g class="tick" opacity="1" transform="translate(213.5,0)">
+                      <line stroke="currentColor" y2="6" y1="-10"></line>
+                      <text fill="currentColor" y="9" dy="0.71em">1.25</text>
+                    </g>
+                    <g class="tick" opacity="1" transform="translate(249.5,0)">
+                      <line stroke="currentColor" y2="6" y1="-10"></line>
+                      <text fill="currentColor" y="9" dy="0.71em">2.5</text>
+                    </g>
+                    <g class="tick" opacity="1" transform="translate(284.5,0)">
+                      <line stroke="currentColor" y2="6" y1="-10"></line>
+                      <text fill="currentColor" y="9" dy="0.71em">3.75</text>
+                    </g>
+                    <g class="tick" opacity="1" transform="translate(319.5,0)">
+                      <line stroke="currentColor" y2="6" y1="-10"></line>
+                      <text fill="currentColor" y="9" dy="0.71em">5</text>
+                    </g>
+                    <text x="0" y="-16" fill="currentColor" text-anchor="start" font-weight="bold" class="title">Temperature anomaly (Celsius)</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="row">
+            <div class="col-lg-12">
+              <select id="city1" name="city1" class="form-control">
+                <!-- <option value="0">Global average</option> -->
+                <option value="272" selected>Barcelona</option>
+                <option value="2124">New York</option>
+                <option value="2575">Reikjavik</option>
+                <option value="2963">Sydney</option>
+                <option value="2590">Rio de Janeiro</option>
+                <option value="751">Dakar</option>
+              </select>
+              <!-- <h2 id="spiral-1-title" class="text-center"></h2> -->
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div id="spiral-1"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <select id="city2" name="city2" class="form-control">
+                <!-- <option value="0">Global average</option>
+                <option value="272">Barcelona</option>
+                <option value="2124" selected>New York</option>
+                <option value="2575">Reikjavik</option>
+                <option value="2963">Sydney</option>
+                <option value="2590">Rio de Janeiro</option>
+                <option value="751">Dakar</option> -->
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div id="spiral-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <br/>
-    <div id="left">
-      <div id="controls">
-        <button id="play" disabled>Play</button>
-        <button id="stop" disabled>Stop</button>
-        <label for="city1">First City</label>
-        <select id="city1" name="city1">
-          <!-- <option value="0">Global average</option> -->
-          <option value="272" selected>Barcelona</option>
-          <option value="2124">New York</option>
-          <option value="2575">Reikjavik</option>
-          <option value="2963">Sydney</option>
-          <option value="2590">Rio de Janeiro</option>
-          <option value="751">Dakar</option>
-        </select>
-        <label for="city2">Second City</label>
-        <select id="city2" name="city2">
-          <option value="272">Barcelona</option>
-          <option value="2124" selected>New York</option>
-          <option value="2575">Reikjavik</option>
-          <option value="2963">Sydney</option>
-          <option value="2590">Rio de Janeiro</option>
-          <option value="751">Dakar</option>
-        </select>
-        <br/>
-        <strong id="current-date"></strong>
-        <input type="range" name="year-month-slider" id=year-month-slider min="0" max="100" value="0" disabled>
-        <br/>
-      </div>
-      <div id="world-map"></div>
-      <div id="legend">
-        <svg width="320" height="50" viewBox="0,0,356,50" style="overflow: visible; display: block;">
-          <g>
-            <rect x="0" y="18" width="36" height="10" fill="#2166AC"></rect>
-            <rect x="36" y="18" width="35" height="10" fill="#4393C3"></rect>
-            <rect x="71" y="18" width="36" height="10" fill="#92C5De"></rect>
-            <rect x="107" y="18" width="35" height="10" fill="#D1E5F0"></rect>
-            <rect x="142" y="18" width="36" height="10" fill="#F7F7F7"></rect>
-            <rect x="178" y="18" width="35" height="10" fill="#FDDBC7"></rect>
-            <rect x="213" y="18" width="36" height="10" fill="#F4A582"></rect>
-            <rect x="249" y="18" width="35" height="10" fill="#D6604D"></rect>
-            <rect x="284" y="18" width="36" height="10" fill="#B2182B"></rect>
-          </g>
-          <g transform="translate(0,28)" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
-            <g class="tick" opacity="1" transform="translate(36.5,0)">
-              <line stroke="currentColor" y2="6" y1="-10"></line>
-              <text fill="currentColor" y="9" dy="0.71em">-5</text>
-            </g>
-            <g class="tick" opacity="1" transform="translate(71.5,0)">
-              <line stroke="currentColor" y2="6" y1="-10"></line>
-              <text fill="currentColor" y="9" dy="0.71em">-3.75</text>
-            </g>
-            <g class="tick" opacity="1" transform="translate(107.5,0)">
-              <line stroke="currentColor" y2="6" y1="-10"></line>
-              <text fill="currentColor" y="9" dy="0.71em">-2.5</text>
-            </g>
-            <g class="tick" opacity="1" transform="translate(142.5,0)">
-              <line stroke="currentColor" y2="6" y1="-10"></line>
-              <text fill="currentColor" y="9" dy="0.71em">-1.25</text>
-            </g>
-            <g class="tick" opacity="1" transform="translate(178.5,0)">
-              <line stroke="currentColor" y2="6" y1="-10"></line>
-              <text fill="currentColor" y="9" dy="0.71em">0</text>
-            </g>
-            <g class="tick" opacity="1" transform="translate(213.5,0)">
-              <line stroke="currentColor" y2="6" y1="-10"></line>
-              <text fill="currentColor" y="9" dy="0.71em">1.25</text>
-            </g>
-            <g class="tick" opacity="1" transform="translate(249.5,0)">
-              <line stroke="currentColor" y2="6" y1="-10"></line>
-              <text fill="currentColor" y="9" dy="0.71em">2.5</text>
-            </g>
-            <g class="tick" opacity="1" transform="translate(284.5,0)">
-              <line stroke="currentColor" y2="6" y1="-10"></line>
-              <text fill="currentColor" y="9" dy="0.71em">3.75</text>
-            </g>
-            <g class="tick" opacity="1" transform="translate(319.5,0)">
-              <line stroke="currentColor" y2="6" y1="-10"></line>
-              <text fill="currentColor" y="9" dy="0.71em">5</text>
-            </g>
-            <text x="0" y="-16" fill="currentColor" text-anchor="start" font-weight="bold" class="title">Temperature anomaly (Celsius)</text>
-          </g>
-        </svg>
-      </div>
-    </div>
-    <div id="right">
-      <h2 id="spiral-1-title"></h2>
-      <div id="spiral-1">
 
-      </div>
-      <div id="spiral-2">
-
-      </div>
-      <h2 id="spiral-2-title"></h2>
-    </div>
-
-  <script defer src="spiral.js"></script>
-  <script defer src="viz.js"></script>
+    <script defer src="spiral.js"></script>
+    <script defer src="viz.js"></script>
   </body>
 </html>

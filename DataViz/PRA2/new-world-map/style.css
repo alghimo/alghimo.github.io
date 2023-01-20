@@ -1,3 +1,8 @@
+@media (min-width: 1200px) {
+    .container {
+        width: 1600px!important;
+    }
+}
 html, body{
     min-height: 100%
 }
@@ -11,30 +16,25 @@ body{
 
 #world-map {
     height: 640px;
-    width: 960px;
+    /* width: 960px; */
+    width: 100%;
     float: left;
 }
 
 #world-map .leaflet-map-pane {
-    transform: translate3d(0px, -52px, 0px) !important;
+    transform: translate3d(36px, -52px, 0px) !important;
 }
 
-#year-month-slider {
-    width: 85%;
+/* #year-month-slider {
+    width: 100%;
     float:left;
-}
+} */
 
 #left {
     position:absolute;
     width:960px;
     left:10px;
     top:100px;
-}
-#controls {
-    float:left;
-    width:100%;
-    /* height: 640px;
-    margin-right: 20px; */
 }
 
 #right {
@@ -61,6 +61,11 @@ body{
     width:10%;
 }
 
-#play {
+/* #play {
     margin-left: 250px;
-}
+} */
+
+.top-buffer { margin-top:20px; }
+.top-buffer-10 { margin-top:10px; }
+.top-buffer-65 { margin-top:65px; }
+/* #controls { margin-top:53px; } */

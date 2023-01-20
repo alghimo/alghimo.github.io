@@ -1,3 +1,4 @@
+// From https://observablehq.com/@mootari/embedding-fonts-into-an-svg
 async function toDataURL(url) {
     return new Promise(async(resolve, reject) => {
       const res = await fetch(url);
@@ -8,6 +9,8 @@ async function toDataURL(url) {
       reader.onloadend = () => resolve(reader.result);
     });
 }
+
+// From https://observablehq.com/@grahamsnyder/climate-spiral
 async function getFontStyle(fontName, fontURL, fontType = 'woff2') {
     const fontData = await toDataURL(fontURL);
     return `
@@ -20,12 +23,8 @@ async function getFontStyle(fontName, fontURL, fontType = 'woff2') {
 
 let getBarlowFontface = getFontStyle("Barlow-Light", "https://fonts.gstatic.com/s/barlow/v4/7cHqv4kjgoGqM7E3p-ks51ostz0rdg.woff2")
 
-function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, barlow_fontface) {
+function ClimateSpiral (d3, containerId, width, monthlyTemps, barlow_fontface) {
 
-    let duration = 15000
-    // let date_extent = 5367168000000
-    let date_extent = 1354320000000
-    // chart_width = Math.min(width, 750)
     let chart_width = width
     let chart_height = chart_width
     let margin = 0.05 * chart_width
@@ -37,23 +36,15 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
     const maxAnomaly = monthlyTemps.reduce((previous, current) => {
         return current.anomaly > previous.anomaly ? current : previous;
     }).anomaly;
-    // console.log("Min anomaly: ", minAnomaly, " :: Max anomaly: ", maxAnomaly)
 
     let theta = d3.scaleUtc()
         .domain([Date.UTC(0, 0, 1), Date.UTC(1, 0, 1) - 1])
         .range([0, 2 * Math.PI])
 
-    // let r = d3.scaleLinear()
-    //     .domain([-1, 2.4])
-    //     .range([innerRadius, outerRadius])
     let r = d3.scaleLinear()
         .domain([minAnomaly, maxAnomaly])
         .range([innerRadius, outerRadius])
 
-    // let radialColour = (context, alpha=1) => {
-    //     let interpolateColScheme = d3.interpolateRgbBasis(d3.schemeRdBu[10])
-    //     let colour = d3.scaleDiverging(interpolateColScheme)
-    //     .domain([-1.5, 0, 1.5].reverse())
     let radialColour = (context, alpha=1) => {
         let interpolateColScheme = d3.interpolateRgbBasis(d3.schemeRdBu[10])
         let colour = d3.scaleDiverging(interpolateColScheme)
@@ -68,8 +59,6 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
         return grd
     }
 
-    let titleContainer = d3.select("#" + containerId + "-title")
-    titleContainer.text(`Climate spiral for ${cityName}`)
     let container = d3.select("#" + containerId)
     container.append("figure").attr("id", `${containerId}-main-figure`)
     let mainFigure = d3.select(`#${containerId}-main-figure`)
@@ -112,6 +101,7 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
             .call(g => g.append("text")
                 .append("textPath")
                 .attr("startOffset", 12)
+                .attr("font-size", "14px")
                 .attr("xlink:href", d => "#" + d.id)
                 .text(d3.utcFormat("%B"))))
 
@@ -143,13 +133,20 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
 
     let rAxisId = `${containerId}-r-axis`
     let rAxisSelector = `#${rAxisId}`
+    var rAxisDataTicks
+    if (maxAnomaly - 2 > 3) {
+        rAxisDataTicks = [maxAnomaly - 2, 2, 0, -2, minAnomaly]
+    } else {
+        rAxisDataTicks = [2, 0, -2, minAnomaly]
+    }
+
     let rAxis = g => g
         .call(g => g.append('style').text(barlow_fontface))
         .attr('font-family',  "Barlow-Light")
         .attr("text-anchor", "end")
-        .attr("font-size", outerRadius/20)
+        .attr("font-size", outerRadius/15)
         .call(g => g.selectAll("g")
-            .data([maxAnomaly, 2, 0, -2, minAnomaly])
+            .data(rAxisDataTicks)
             .join("g")
             .attr("fill", "none")
             .call(g => g.append("circle")
@@ -196,41 +193,6 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
         return yearDisplay
     }
 
-    let replayId = `${containerId}-replay`
-    let replaySelector = `#${replayId}`
-    let replayLink = g => {
-        g.attr("id", replayId)
-        .on("mouseover", (d,i) => g.select("line")
-                                    .transition()
-                                    .attr("stroke-opacity", 1))
-        .on("mouseout", (d,i) => g.select("line")
-                                    .transition()
-                                    .attr("stroke-opacity", 0))
-        .attr("visibility", "hidden")
-        .attr("font-size", outerRadius/20)
-        .attr("opacity", 0)
-        .append("text")
-        .call(g => g.append('style').text(barlow_fontface))
-        .attr("font-family",  "Barlow-Light")
-        .attr("letter-spacing", "0.2em")
-        .attr("x", 0)
-        .attr("y", innerRadius/2)
-        .attr("text-anchor", "middle")
-        .text("REPLAY")
-        .attr("fill", "#444")
-
-        let uline_length = axes.select(replaySelector).node().getBBox().width
-
-        g.append("line")
-        .attr("x1", -uline_length/2 + outerRadius*0.005)
-        .attr("y1", innerRadius/2 + outerRadius*0.01)
-        .attr("x2", uline_length/2)// - outerRadius/75)
-        .attr("y2", innerRadius/2 + outerRadius*0.01)
-        .attr("stroke", "#444")
-        .attr("stroke-opacity", 0)
-        .attr("stroke-width", outerRadius*0.002)
-    }
-
     let drawSeg = (context, data_slice) => {
         context.beginPath()
         let fn = d3.lineRadial()
@@ -248,15 +210,11 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
 
     let newContext = function () {
         var canvas = document.createElement("canvas");
-        // const dpi = Window.devicePixelRatio
-        // canvas.width = chart_width * dpi;
-        // canvas.height = chart_height * dpi;
         canvas.width = chart_width;
         canvas.height = chart_height;
         canvas.style.width = chart_width + "px";
 
         const context = canvas.getContext("2d");
-        // context.scale(dpi, dpi);
         context.translate(chart_width/2, chart_height/2);
         context.lineWidth = 1.5;
         context.globalCompositeOperation = "multiply";
@@ -292,13 +250,8 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
 
     const canvases = getCanvases()
 
-    // console.log(contexts)
-
-    // console.log(canvases)
     mainFigure.node().appendChild(canvases.static)
     mainFigure.node().appendChild(canvases.dynamic)
-    // mainFigure.node().appendChild(d3.create("figcaption").text("Animated temperature spiral showing HadCRUT5 temperature anomalies above 1850–1900 baseline, from 1850 to December 2022.").node())
-
 
     let newDOM = () =>  {
         const custom = d3.create("custom")
@@ -311,79 +264,21 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
         return custom
     }
 
-    let hideReplay = () => {
-        axes.select(replaySelector)
-        .transition()
-            .attr("opacity", 0)
-            .on("end", _ => axes.select(replaySelector)
-                .attr("visibility", "hidden"))
-    }
-
-    let showReplay = () => {
-        axes.select(replaySelector)
-        .attr("visibility", "visible")
-            .transition()
-            .attr("opacity", 1)
-    }
-
-    let timer = d3.timer(_ => _) // global timer object for convenient restarting instead of creating duplicates
-
-    let extendData = (data) => {
-        let data_extended = Array.from(data)
-        let anomalies_1850_1900 = data.filter(d => d.date > Date.UTC(1850,0,0) && d.date< Date.UTC(1901,0,0)).map(d => d.anomaly)
-        let mean_1850_1900 = anomalies_1850_1900.reduce((a,b) => a += b) / anomalies_1850_1900.length
-
-        // Duplicate first and last values
-        data_extended.unshift(Object.assign({}, data_extended[0]))
-        data_extended.push(Object.assign({}, data_extended[data_extended.length-1]))
-
-        // Offset first and last date/month by 1 month
-        data_extended[0].date = d3.utcParse("%m/%d/%Y")(moment(data_extended[0].date).subtract(1,"months").calendar())
-        data_extended[0].month = data_extended[0].date.getMonth()
-
-        data_extended[data_extended.length-1].date = d3.utcParse("%m/%d/%Y")(moment(data_extended[data_extended.length-1].date).add(1, "months").calendar())
-        data_extended[data_extended.length-1].month = data_extended[data_extended.length-1].date.getMonth()
-
-
-        for (let i=0; i<data_extended.length; ++i) {
-            data_extended[i].i = i-1 // Add line segment index
-            data_extended[i].anomaly = data_extended[i].anomaly - mean_1850_1900 // Rebaseline anomalies to 1850–1900
-        }
-
-        return data_extended
-    }
-
     let getUpdate = (data_extended) => {
-        var maxAnomaly = data_extended[1].anomaly;
-        var newMax = false
-        var numSteps = data_extended.length
-        var date_extent = data_extended.slice(-1)[0].dt - data_extended[0].dt
         let dynamicSelector = `custom#${containerId}-dynamic`
         let staticSelector = `custom#${containerId}-static`
-        // let update = (root, elapsed) => {
+
         let update = (root, timeStep) => {
-            const year_in_ms = 365.25 * 24 * 3600 * 1000
-            const fade_after = 0
-            const fade_over = 30 * year_in_ms * numSteps / date_extent
-            const faded_after = fade_after + fade_over
-
-
-            // let t = date_extent * timeStep / numSteps
-            // let t = data_extended[timeStep].dt
-            // t = moment(data_extended[1].date).add(t, "milliseconds")
             if (timeStep >= data_extended.length) {
                 t = moment(data_extended[data_extended.length].date).add(1, "months")
             } else {
                 t = moment(data_extended[timeStep].date)
             }
 
-
-
             var d_faded = 0
             if (timeStep - 30 > 0) {
                 d_faded = data_extended[timeStep - 30].date
             }
-
 
             const elapsed_data = data_extended.slice(1,-2).filter(d => d.date <= data_extended[timeStep].date)
             const static_path_data = elapsed_data.filter(d => d.date < d_faded)
@@ -402,11 +297,6 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
                         .attr("class", "pathsegment")
                         .attr("date", d => d.date)
                         .attr("strokeOpacity", 1)
-                        // .call(enter => enter.transition()
-                        // .duration(fade_over)
-                        // .delay(fade_after)
-                        // .ease(d3.easeCubicIn)
-                        // .attr("strokeOpacity", 0.2))
                 )
 
             dynamic_paths = root.select(dynamicSelector).selectAll("custom.pathsegment")
@@ -428,34 +318,25 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
                     drawSeg(contexts.static, data_extended.slice(d.i, d.i+4))
                 })
 
-            newMax = false
-            dynamic_path_data.forEach((d) => {
-                if (d.anomaly > maxAnomaly) {
-                    maxAnomaly = d.anomaly
-                    newMax = true
-                }
-            })
-
-            if (newMax) {
-                addCircle(d3.select(rAxisSelector), maxAnomaly)
+            let startIndex = (elapsed_data.length - 60) < 0 ? 0 : elapsed_data.length - 60;
+            var lastAnomalies = elapsed_data.slice(startIndex)
+            if (lastAnomalies.length > 0) {
+                var averageAnomaly = lastAnomalies.map(d => d.anomaly).reduce((a, b) => a += b) / lastAnomalies.length
+                addCircle(d3.select(rAxisSelector), averageAnomaly)
             }
         }
 
         return update
     }
-    // CONTINUE HERE
 
     let mainLoop = (data) => {
-        // data_extended = extendData(data)
         data_extended = data
-        //data.map(d => d.anomaly).reduce((a,b) => Math.min(a,b))
         let yearDisplay = getYearDisplay(data)
 
         let drawAxes = () => {
             axes.append("g").call(thetaAxis);
             axes.append("g").attr("id", rAxisId).call(rAxis);
             axes.append("text").call(yearDisplay);
-            axes.append("g").call(replayLink)
         }
 
         let setup = () => {
@@ -481,22 +362,8 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
             contexts.dynamic.clearRect(-chart_width/2, -chart_height/2, chart_width, chart_height)
 
             axes.select(yearSelector).text("")
-            hideReplay()
 
             return root
-            // const runTimer = () => {
-            //     timer.restart(elapsed => {
-            //         if (elapsed >= duration) {
-            //             update(root, duration)
-
-            //             timer.stop()
-            //             setTimeout(showReplay, 250)
-            //         }
-            //         else update(root, elapsed)
-            //     })
-            // }
-
-            // setTimeout(runTimer, 250)
         }
 
         setup()
@@ -508,17 +375,7 @@ function ClimateSpiral (d3, containerId, width, height, cityName, monthlyTemps, 
             update: curriedUpdate,
             yearDisplay: yearDisplay
         }
-        // d3.select("#play").on("click", function() {
-        //     setup()
-        //     main()
-        // });
-
-        // d3.select("#stop").on("click", function() {
-        //     timer.stop()
-        // });
     }
 
-    // return drawSeg;
-    // mainLoop(monthlyTemps)
     return mainLoop(monthlyTemps)
 }

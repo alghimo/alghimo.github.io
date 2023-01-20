@@ -9,9 +9,6 @@
     var cityTemps = {};
     var timePoints = [];
     var currentIndex;
-    var currentYear;
-    var currentMonth;
-    var minYear;
     var animationInterval;
 
     // Functions
@@ -34,32 +31,21 @@
 
     // End prototypes
 
+    const spiralWidth = 400
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     const radiusScale = 100000
     // Time to animate a year in ms
     const initialAnimateTimePointDuration = 250
     let animateTimePointDuration = 250
     // Time to animate a circle in ms
-    const animateCircleDuration = 500
     const circleOpacity = 0.5
-    // let mapURL = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoibmlja255ciIsImEiOiJjajduNGptZWQxZml2MndvNjk4eGtwbDRkIn0.L0aWwfHlFJVGa-WOj7EHaA'
     let mapURL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-    // let citiesURL = "./data/cities.csv"
-    // let cityTempURL = "./data/cityTemps.csv"
     let citiesURL = "./data/cities.json"
     let cityTempURL = "./data/cityTemps.json"
     let currentDateText = d3.select("#current-date")
     let yearMonthSlider = d3.select("#year-month-slider")
     let playButton = d3.select("#play")
     let stopButton = d3.select("#stop")
-
-    let timePointToIndex = (year, month) => {
-        return timePoints.findIndex(t => (t.year == year) & (t.month == month))
-    }
-
-    let indexToTimePoint = (index) => {
-        return timePoints[index]
-    }
 
     var getAnomalyColor = d3.scaleLinear()
         .domain(d3.ticks(-5, 5, 9))
@@ -97,7 +83,6 @@
 
         if (cityTemp.id in circles) {
             circle = circles[cityTemp.id]
-            // let newRadius = Math.abs(cityTemp.anomaly);
             let newColor = getAnomalyColor(cityTemp.anomaly)
             circle.setStyle({color: newColor, fillColor: newColor})
 
@@ -105,7 +90,6 @@
             circle.setPopupContent(createPopupContent(city, cityTemp))
         } else {
             let color = getAnomalyColor(cityTemp.anomaly)
-            // let radius = Math.abs(cityTemp.anomaly)
             let radius = 2
             let circle = L
                 .circle([city.lat, city.lon], {
@@ -195,8 +179,6 @@
         timePoints.sort(compareTimePoints);
 
         if (minYear in cityTemps) {
-            // currentMonth = 1
-            // currentYear = minYear
             drawTimePoint(currentIndex);
         } else {
             console.log("ERROR: minYear " + minYear + " is not loaded in the yearly temps!")
@@ -375,29 +357,41 @@
                                     d3.select("#spiral-1").html("");
                                     cityId1 = parseInt(d3.select("#city1").node().value)
                                     monthlyTemps1 = extractCityTemps(cityId1, cityTempData)
-                                    city1 = citiesData.filter(c => c.id == cityId1)[0]
-                                    city1Name = city1.city + " (" + city1.country + ")"
-                                    drawSpiral1Seg = ClimateSpiral (d3, "spiral-1", 320, 320, city1Name, monthlyTemps1, barlow_fontface)
+                                    drawSpiral1Seg = ClimateSpiral (d3, "spiral-1", spiralWidth, monthlyTemps1, barlow_fontface)
                                     updateSpiral1 = drawSpiral1Seg.update
                                 }
 
                                 selectCity1()
                                 d3.select("#city1").on("change", selectCity1)
 
+                                var city2options = d3.select("#city2").selectAll('option').data(citiesData);
+
+                                city2options.enter()
+                                    .append('option')
+                                    .attr('value', function(d) {
+                                        return d.id;
+                                    })
+                                    .text(function(d) {
+                                        return d.city + " (" + d.country + ")";
+                                    })
+                                    .call(d => {
+                                        if (d.id == 2124) {
+                                            this.selected = true;
+                                        }
+                                    });
+
+                                d3.select("#city2").node().selectedIndex = 2165;
                                 var selectCity2 = () => {
                                     d3.select("#spiral-2").html("");
                                     cityId2 = parseInt(d3.select("#city2").node().value)
                                     monthlyTemps2 = extractCityTemps(cityId2, cityTempData)
-                                    city2 = citiesData.filter(c => c.id == cityId2)[0]
-                                    city2Name = city2.city + " (" + city2.country + ")"
-                                    drawSpiral2Seg = ClimateSpiral (d3, "spiral-2", 320, 320, city2Name, monthlyTemps2, barlow_fontface)
+                                    drawSpiral2Seg = ClimateSpiral (d3, "spiral-2", spiralWidth, monthlyTemps2, barlow_fontface)
                                     updateSpiral2 = drawSpiral2Seg.update
                                 }
                                 selectCity2()
                                 d3.select("#city2").on("change", selectCity2)
 
                                 console.log("Loaded city temps")
-                                // console.log(cityTempData)
                                 setup(citiesData, cityTempData)
                             })
                         }
