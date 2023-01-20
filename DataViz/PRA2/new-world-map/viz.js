@@ -353,6 +353,19 @@
                             getBarlowFontface.then(function(barlow_fontface) {
                                 console.log("Generating climate spiral wrapper")
 
+                                var city1options = d3.select("#city1").selectAll('option').data(citiesData);
+
+                                city1options.enter()
+                                    .append('option')
+                                    .attr('value', function(d) {
+                                        return d.id;
+                                    })
+                                    .text(function(d) {
+                                        return d.city + " (" + d.country + ")";
+                                    });
+
+                                d3.select("#city1").node().selectedIndex = 271;
+
                                 var selectCity1 = () => {
                                     d3.select("#spiral-1").html("");
                                     cityId1 = parseInt(d3.select("#city1").node().value)
@@ -373,11 +386,6 @@
                                     })
                                     .text(function(d) {
                                         return d.city + " (" + d.country + ")";
-                                    })
-                                    .call(d => {
-                                        if (d.id == 2124) {
-                                            this.selected = true;
-                                        }
                                     });
 
                                 d3.select("#city2").node().selectedIndex = 2165;
